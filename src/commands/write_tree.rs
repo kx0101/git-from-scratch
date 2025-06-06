@@ -17,7 +17,18 @@ fn write_tree_for(path: &Path) -> anyhow::Result<Option<[u8; 20]>> {
         entries.push(entry);
     }
 
-    entries.sort_unstable_by(|a, b| a.file_name().cmp(&b.file_name()));
+    entries.sort_unstable_by(|a, b| {
+        let mut afn = a.file_name().into_encoded_bytes();
+        let mut bfn = b.file_name().into_encoded_bytes();
+
+        // When we append 0xFF (byte 255) to strings, the shorter string will reach 0xFF sooner,
+        // and since 255 is the highest possible byte,
+        // that makes the shorter string sort after the longer one in a cmp()
+        afn.push(0xff);
+        bfn.push(0xff);
+
+        afn.cmp(&bfn)
+    });
 
     let mut tree_object = Vec::new();
     for entry in entries {

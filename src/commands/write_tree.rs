@@ -11,15 +11,18 @@ use crate::objects::Object;
 fn write_tree_for(path: &Path) -> anyhow::Result<Option<[u8; 20]>> {
     let mut dir = fs::read_dir(path).context("read directory")?;
 
-    let mut tree_object = Vec::new();
+    let mut entries = Vec::new();
     while let Some(entry) = dir.next() {
         let entry = entry.with_context(|| format!("bad directory entry in {}", path.display()))?;
+        entries.push(entry);
+    }
+
+    entries.sort_unstable_by(|a, b| a.file_name().cmp(&b.file_name()));
+
+    let mut tree_object = Vec::new();
+    for entry in entries {
         let file_name = entry.file_name();
-        if file_name == ".git"
-            || file_name == ".gitignore"
-            || file_name == ".gitkeep"
-            || file_name == "target"
-        {
+        if file_name == ".git" || file_name == "target" {
             continue;
         }
 

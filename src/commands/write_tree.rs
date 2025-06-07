@@ -8,7 +8,7 @@ use std::path::Path;
 use crate::objects::Kind;
 use crate::objects::Object;
 
-fn write_tree_for(path: &Path) -> anyhow::Result<Option<[u8; 20]>> {
+pub fn write_tree_for(path: &Path) -> anyhow::Result<Option<[u8; 20]>> {
     let mut dir = fs::read_dir(path).context("read directory")?;
 
     let mut entries = Vec::new();

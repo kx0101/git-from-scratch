@@ -7,6 +7,7 @@ Commands:
   cat-file
   hash-object
   ls-tree
+  write-tree
   help         Print this message or the help of the given subcommand(s)
 
 Options:
